@@ -30,10 +30,26 @@ app.get("/notes", function(req, res) {
 app.get("/api/notes", function(req, res) {
     // res.send("This works");
     res.json({
-        notes: notes,
+        notes
     })
 });
 
 app.post("/api/notes", (req, res) => {
     notes.push(req.body);
 })
+
+app.delete("/api/notes/:id", (req, res) => {
+    deleteID(req.body, notes);
+})
+
+const deleteID = (query, array) => {
+    const newArray = [];
+    for (let i = 0; i < array.length; i++) {
+        if (array[i].id === query) {
+            continue;
+        } else {
+            newArray.push(array[i]);
+        }
+    }
+    return newArray;
+}
