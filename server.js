@@ -33,3 +33,7 @@ app.get("/api/notes", function(req, res) {
         notes: notes,
     })
 });
+
+app.post("/api/notes", (req, res) => {
+    notes.push(req.body);
+})
