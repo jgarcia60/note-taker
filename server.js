@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 app.listen(PORT, () => {
@@ -29,9 +30,7 @@ app.get("/notes", function(req, res) {
 
 app.get("/api/notes", function(req, res) {
     // res.send("This works");
-    res.json({
-        notes
-    })
+    res.json({notes});
 });
 
 
