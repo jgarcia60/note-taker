@@ -22,18 +22,14 @@ app.listen(PORT, () => {
 //   err ? console.error(err) : console.log('Success!')
 // );
 
-app.get("*", function(req, res) {
-    // res.send("This works");
-    res.sendFile(path.join(__dirname, "./public/index.html"));
-});
-
 app.get("/notes", function(req, res) {
-    // res.send("This works");
-    res.sendFile(path.join(__dirname, "./public/notes.html"));
+  // res.send("This works");
+  res.sendFile(path.join(__dirname, "./public/notes.html"));
 });
 
 app.get("/api/notes", function(req, res) {
-    res.json(db);
+  console.log(db + "at getAndRenderNotes()");
+  res.json(db);
 });
 
 
@@ -55,9 +51,11 @@ app.post("/api/notes", (req, res) => {
       if (err) {
         console.log(err);
       }
-      res.json(db);
+      
     });
+    
   });
+  res.json(db);
 });
 
 
@@ -78,4 +76,10 @@ app.delete("/api/notes/:id", function (req, res) {
       res.json(newDB);
     });
   });
+});
+
+
+app.get("*", function(req, res) {
+    // res.send("This works");
+    res.sendFile(path.join(__dirname, "./public/index.html"));
 });
