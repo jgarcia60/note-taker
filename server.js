@@ -15,11 +15,22 @@ app.listen(PORT, () => {
 });
 
 
-const notes = [];
+const notes = [
+    {
+        id: 0,
+        title: 'Note 1',
+        text: 'Text for note 1'
+    }, 
+    {
+        id: 1,
+        title: 'Note 2',
+        text: 'Text for note 2'
+    }
+];
 
-// fs.writeFile('db.json', notes, (err) =>
-//   err ? console.error(err) : console.log('Success!')
-// );
+fs.writeFile('db.json', notes, (err) =>
+  err ? console.error(err) : console.log('Success!')
+);
 
 app.get("*", function(req, res) {
     // res.send("This works");
@@ -34,9 +45,9 @@ app.get("/notes", function(req, res) {
 app.get("/api/notes", function(req, res) {
     // res.send("This works");
 
-    fs.readFile('db.json', (error, data) =>
-        error ? console.error(error) : console.log(data)
-    );
+    // fs.readFile('db.json', (error, data) =>
+    //     error ? console.error(error) : console.log(data)
+    // );
     
     res.json({notes});
 });
