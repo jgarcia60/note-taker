@@ -2,6 +2,7 @@
 const express = require('express');
 const path = require("path");
 const fs = require('fs');
+let db = require('./db/db.json');
 const PORT = process.env.PORT || 8080;
 
 const app = express();
@@ -15,22 +16,11 @@ app.listen(PORT, () => {
 });
 
 
-const notes = [
-    {
-        id: 0,
-        title: 'Note 1',
-        text: 'Text for note 1'
-    }, 
-    {
-        id: 1,
-        title: 'Note 2',
-        text: 'Text for note 2'
-    }
-];
+// const notes = [];
 
-fs.writeFile('db.json', notes, (err) =>
-  err ? console.error(err) : console.log('Success!')
-);
+// fs.writeFile('db.json', notes, (err) =>
+//   err ? console.error(err) : console.log('Success!')
+// );
 
 app.get("*", function(req, res) {
     // res.send("This works");
@@ -43,40 +33,49 @@ app.get("/notes", function(req, res) {
 });
 
 app.get("/api/notes", function(req, res) {
-    // res.send("This works");
-
-    // fs.readFile('db.json', (error, data) =>
-    //     error ? console.error(error) : console.log(data)
-    // );
-    
-    res.json({notes});
+    res.json(db);
 });
 
 
+// Adding new notes using .post
 app.post("/api/notes", (req, res) => {
-    notes.push(req.body);
-    fs.appendFile('db.json', req.body, (err) =>
-        err ? console.error(err) : console.log('Added req.body!')
-    );
-    res.sendFile(path.join(__dirname, "./public/db.json"));
-})
-
-app.delete("/api/notes/:id", (req, res) => {
-    const newNotes =  deleteID(req.body, notes);
-    fs.writeFile('db.json', notes, (err) =>
-        err ? console.error(err) : console.log('You have overwritten db.json!')
-    );
-    res.sendFile(path.join(__dirname, "./public/db.json"));
+  fs.readFile("./db/db.json", (err, data) => {
+    if (err) {
+      console.log(err);
+    };
+    // Parsing the data read in db.json
+    db = JSON.parse(data);
+    // Adding an id to each note based off its index postion. The +1 is necessary, because an id cannot be null
+    const newNote = { ...req.body, id: db.length + 1 };
+    console.log(newNote);
+    // Pushing the new note into the db.json
+    db.push(newNote);
+    // Writing the note on the page itself
+    fs.writeFile("./db/db.json", JSON.stringify(db), (err) => {
+      if (err) {
+        console.log(err);
+      }
+      res.json(db);
+    });
+  });
 });
 
-const deleteID = (query, array) => {
-    const newArray = [];
-    for (let i = 0; i < array.length; i++) {
-        if (array[i].id === query) {
-            continue;
-        } else {
-            newArray.push(array[i]);
-        }
+
+//Deleting notes using .delete, looking at note id's
+app.delete("/api/notes/:id", function (req, res) {
+  fs.readFile("./db/db.json", (err, data) => {
+    if (err) {
+      console.log(err);
     }
-    return newArray;
-}
+    db = JSON.parse(data);
+    // It is essentially the same as posting a new note, except we are filtering through the given id added by posting a note
+    const newDB = db.filter((note) => note.id != parseInt(req.params.id));
+    console.log(newDB);
+    fs.writeFile("./db/db.json", JSON.stringify(newDB), (err) => {
+      if (err) {
+        console.log(err);
+      }
+      res.json(newDB);
+    });
+  });
+});
