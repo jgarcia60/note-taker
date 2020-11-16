@@ -17,6 +17,9 @@ app.listen(PORT, () => {
 
 const notes = [];
 
+// fs.writeFile('db.json', notes, (err) =>
+//   err ? console.error(err) : console.log('Success!')
+// );
 
 app.get("*", function(req, res) {
     // res.send("This works");
@@ -30,17 +33,30 @@ app.get("/notes", function(req, res) {
 
 app.get("/api/notes", function(req, res) {
     // res.send("This works");
+
+    fs.readFile('db.json', (error, data) =>
+        error ? console.error(error) : console.log(data)
+    );
+    
     res.json({notes});
 });
 
 
 app.post("/api/notes", (req, res) => {
     notes.push(req.body);
+    fs.appendFile('db.json', req.body, (err) =>
+        err ? console.error(err) : console.log('Added req.body!')
+    );
+    res.sendFile(path.join(__dirname, "./public/db.json"));
 })
 
 app.delete("/api/notes/:id", (req, res) => {
-    deleteID(req.body, notes);
-})
+    const newNotes =  deleteID(req.body, notes);
+    fs.writeFile('db.json', notes, (err) =>
+        err ? console.error(err) : console.log('You have overwritten db.json!')
+    );
+    res.sendFile(path.join(__dirname, "./public/db.json"));
+});
 
 const deleteID = (query, array) => {
     const newArray = [];
