@@ -2,7 +2,7 @@
 const express = require('express');
 const path = require("path");
 const fs = require('fs');
-let db = require('./db.json');
+let db = require("./db/db.json");
 const PORT = process.env.PORT || 8080;
 
 const app = express();
@@ -29,7 +29,7 @@ app.get("/api/notes", function(req, res) {
 
 
 app.post("/api/notes", (req, res) => {
-  fs.readFile("./db.json", (err, data) => {
+  fs.readFile("./db/db.json", (err, data) => {
     if (err) {
       console.log(err);
     };
@@ -40,20 +40,20 @@ app.post("/api/notes", (req, res) => {
     console.log(newNote);
     db.push(newNote);
     // Writing the note to the file
-    fs.writeFile("./db.json", JSON.stringify(db), (err) => {
+    fs.writeFile("./db/db.json", JSON.stringify(db), (err) => {
       if (err) {
         console.log(err);
       }
       
     });
-    
   });
+  
   res.json(db);
 });
 
 //Delete note
 app.delete("/api/notes/:id", function (req, res) {
-  fs.readFile("./db.json", (err, data) => {
+  fs.readFile("./db/db.json", (err, data) => {
     if (err) {
       console.log(err);
     }
@@ -61,13 +61,15 @@ app.delete("/api/notes/:id", function (req, res) {
     //write new note
     const newDB = db.filter((note) => note.id != parseInt(req.params.id));
     console.log(newDB);
-    fs.writeFile("./db.json", JSON.stringify(newDB), (err) => {
+    fs.writeFile("./db/db.json", JSON.stringify(newDB), (err) => {
       if (err) {
         console.log(err);
       }
       res.json(newDB);
     });
+    
   });
+  
 });
 
 //needed to move this get call to the end so that the other paths could be accessed first
