@@ -2,7 +2,7 @@
 const express = require('express');
 const path = require("path");
 const fs = require('fs');
-let db = require('./db/db.json');
+let db = require('./db.json');
 const PORT = process.env.PORT || 8080;
 
 const app = express();
@@ -16,14 +16,7 @@ app.listen(PORT, () => {
 });
 
 
-// const notes = [];
-
-// fs.writeFile('db.json', notes, (err) =>
-//   err ? console.error(err) : console.log('Success!')
-// );
-
 app.get("/notes", function(req, res) {
-  // res.send("This works");
   res.sendFile(path.join(__dirname, "./public/notes.html"));
 });
 
@@ -33,9 +26,9 @@ app.get("/api/notes", function(req, res) {
 });
 
 
-// Adding new notes using .post
+
 app.post("/api/notes", (req, res) => {
-  fs.readFile("./db/db.json", (err, data) => {
+  fs.readFile("./db.json", (err, data) => {
     if (err) {
       console.log(err);
     };
@@ -47,7 +40,7 @@ app.post("/api/notes", (req, res) => {
     // Pushing the new note into the db.json
     db.push(newNote);
     // Writing the note on the page itself
-    fs.writeFile("./db/db.json", JSON.stringify(db), (err) => {
+    fs.writeFile("./db.json", JSON.stringify(db), (err) => {
       if (err) {
         console.log(err);
       }
@@ -61,7 +54,7 @@ app.post("/api/notes", (req, res) => {
 
 //Deleting notes using .delete, looking at note id's
 app.delete("/api/notes/:id", function (req, res) {
-  fs.readFile("./db/db.json", (err, data) => {
+  fs.readFile("./db.json", (err, data) => {
     if (err) {
       console.log(err);
     }
@@ -69,7 +62,7 @@ app.delete("/api/notes/:id", function (req, res) {
     // It is essentially the same as posting a new note, except we are filtering through the given id added by posting a note
     const newDB = db.filter((note) => note.id != parseInt(req.params.id));
     console.log(newDB);
-    fs.writeFile("./db/db.json", JSON.stringify(newDB), (err) => {
+    fs.writeFile("./db.json", JSON.stringify(newDB), (err) => {
       if (err) {
         console.log(err);
       }
