@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
+//need this line below to link static .js files in the HTML
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
@@ -32,14 +33,13 @@ app.post("/api/notes", (req, res) => {
     if (err) {
       console.log(err);
     };
-    // Parsing the data read in db.json
+    // Parsing the data in db.json
     db = JSON.parse(data);
-    // Adding an id to each note based off its index postion. The +1 is necessary, because an id cannot be null
+    // Adding an id to each note based off its index postion.
     const newNote = { ...req.body, id: db.length + 1 };
     console.log(newNote);
-    // Pushing the new note into the db.json
     db.push(newNote);
-    // Writing the note on the page itself
+    // Writing the note to the file
     fs.writeFile("./db.json", JSON.stringify(db), (err) => {
       if (err) {
         console.log(err);
@@ -51,15 +51,14 @@ app.post("/api/notes", (req, res) => {
   res.json(db);
 });
 
-
-//Deleting notes using .delete, looking at note id's
+//Delete note
 app.delete("/api/notes/:id", function (req, res) {
   fs.readFile("./db.json", (err, data) => {
     if (err) {
       console.log(err);
     }
     db = JSON.parse(data);
-    // It is essentially the same as posting a new note, except we are filtering through the given id added by posting a note
+    //write new note
     const newDB = db.filter((note) => note.id != parseInt(req.params.id));
     console.log(newDB);
     fs.writeFile("./db.json", JSON.stringify(newDB), (err) => {
@@ -71,8 +70,7 @@ app.delete("/api/notes/:id", function (req, res) {
   });
 });
 
-
+//needed to move this get call to the end so that the other paths could be accessed first
 app.get("*", function(req, res) {
-    // res.send("This works");
     res.sendFile(path.join(__dirname, "./public/index.html"));
 });
